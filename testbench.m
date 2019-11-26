@@ -13,14 +13,18 @@ x = s+i;                    % input signal x[n]
 d = x;                      % Desired signal d[n]
 
 mu =0.0001;                 % Learning rate/step-size of the convergence to the optimal system
-lambda = 1;                 % Forgetting rate of the convergence to the optimal system
+lambda = 0.999;             % Forgetting rate of the convergence to the optimal system
 
 % Filter Runner
+%LMS
 [y,e,h] = LMS(x,x,M,nD,mu);
-%[y,e,h] = RLS(x,x,M,nD,lambda);
-
 % Data collection
 SaveData('LMS',M,nD,f,mu,x,s,i,y,h,e);
+
+%RLS
+% [y,e,h] = RLS(x,x,M,nD,lambda);
+% % Data collection
+% SaveData('RLS',M,nD,f,lambda,x,s,i,y,h,e);
 
 % Frequency response of the signals
 fft_samples = ceil(samples*0.1);

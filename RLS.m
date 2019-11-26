@@ -31,9 +31,9 @@ h = zeros(M,1);             % System function
 e = zeros(1,samples);       % Error signal
 y = zeros(1,samples);       % Output estimate signal
 
-delta = 1;                  % Inverse input signal power estimate
+delta = 1;             % Inverse input signal power estimate
 
-Sd = delta*eye(M);          % Inverse deterministic correlation matrix
+Sd = 1/delta*eye(M);        % Inverse deterministic correlation matrix
                             % of the input signal
 pd = zeros(M,1);            % deterministic cross-correlation vector
                             % between the input and the desired signals
