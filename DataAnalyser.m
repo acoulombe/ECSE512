@@ -31,13 +31,29 @@ for set = 1:length(ls)
    end
 end
 
-% Plot data
-samples = length(x(1).x);
+% Plot Error
 hold on;
+samples = length(x(1).x);
 for set = 1:length(x)
     s_ = s(set).s;
     e_ = e(set).e;
-    plot((M+nD:samples),(s_(M+nD:samples)-e_(M+nD:samples)));
+    %TODO make moving average filter to clean plot
+    plot((M+nD:samples),abs(s_(M+nD:samples)-e_(M+nD:samples)));
 end
+legend(replace({ls(idx).name}, '_','/'));
+hold off;
+
+% Plot Converged Filter system function H
+figure;
+hold on;
+fft_samples = ceil(samples*0.1);
+for set = 1:length(h)
+    % Frequency response of the signals
+    h_ = h(set).h;
+    h_fft = abs(fft(h_,fft_samples+1));
+    plot(0:2/fft_samples:2,h_fft);
+end
+title('adaptive filter H(w)');
+xlabel('angular frequency (pi rad/s)');
 legend(replace({ls(idx).name}, '_','/'));
 hold off;
