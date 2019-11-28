@@ -1,30 +1,49 @@
 close all;
 clear all;
-% Parameters
-M = 30;                     % Memory of the adaptive filter
-nD = 100;                   % Delay of the input signal x[n]
-samples = 10000;
-n = 1:samples;
-f=0.1;                      % frequency of the interference sine wave ]0,0.5[
-i = sin(pi*f*n);            % narrowband interference signal i[n]
 
-s = randn(size(i));         % wideband signal s[n]
+% User Modifyable Parameters
+type = 'LMS';               % Type of adaptive filter to use (LMS or RLS)
+M = 50;                     % Memory of the adaptive filter
+nD = 100;                   % Delay of the input signal x[n]
+f=0.1;                      % frequency of the interference sine wave ]0,0.5[
+
+env = 'non-stationary';     % Determine environment to use
+switch env
+    case 'stationary'
+        samples = 10000;
+        s = randn(size(i));         % wideband signal s[n]
+    case 'non-stationary'
+        src_file = "48k/CA/CA01_01.wav";    % audio file to use as wideband signal s[n]
+        [v, Fs] = audioread(src_file);
+        samples = length(v);
+        s = v'; 
+end
+n = 1:samples;    
+i = sin(pi*f*n);            % narrowband interference signal i[n]
 x = s+i;                    % input signal x[n]
 d = x;                      % Desired signal d[n]
 
 mu =0.0001;                 % Learning rate/step-size of the convergence to the optimal system
-lambda = 0.9;                 % Forgetting rate of the convergence to the optimal system
+lambda = 0.999;             % Forgetting rate of the convergence to the optimal system
+
+%====================================================================================
+%                       Main Runnable Script (do not modify)
+%====================================================================================
 
 % Filter Runner
-% %LMS
-% [y,e,h] = LMS(x,x,M,nD,mu);
-% % Data collection
-% SaveData('LMS',M,nD,f,mu,x,s,i,y,h,e);
-
-%RLS
-[y,e,h] = RLS(x,x,M,nD,lambda);
-% Data collection
-% SaveData('RLS',M,nD,f,lambda,x,s,i,y,h,e);
+switch type
+    case 'LMS'
+        [y,e,h] = LMS(x,x,M,nD,mu);
+        % Data collection
+        SaveData(env,'LMS',M,nD,f,mu,x,s,i,y,h,e);
+    case 'RLS'
+        [y,e,h] = RLS(x,x,M,nD,lambda);
+        % Data collection
+        SaveData(env,'RLS',M,nD,f,lambda,x,s,i,y,h,e);
+    otherwise
+        "Invalid type of adaptive filter"
+        return
+end
 
 % Frequency response of the signals
 fft_samples = ceil(samples*0.1);
@@ -45,3 +64,4 @@ subplot(4,1,1); plot(0:2/fft_samples:2,h_fft); title('adaptive filter H(w)'); xl
 subplot(4,1,2); plot(0:2/fft_samples:2,x_fft); title('input signal X(w)'); xlabel('angular frequency (pi rad/s)');
 subplot(4,1,3); plot(0:2/fft_samples:2,y_fft); title('estimated Interference I(w)'); xlabel('angular frequency (pi rad/s)');
 subplot(4,1,4); plot(0:2/fft_samples:2,e_fft); title('output signal E(w)'); xlabel('angular frequency (pi rad/s)');
+%====================================================================================

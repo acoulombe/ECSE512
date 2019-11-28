@@ -1,11 +1,17 @@
 clear all;
 close all;
 
-% Parameters
-M = 30;
-nD = 100;
-f = 0.1;
-r = 0.0001;
+% User Modifyable Parameters
+variable = 'M';                     % Variable to analyse effect on output [M,nD,f,r]
+M = 50;                             % Order of the filter
+nD = 100;                           % Delay of the input signal to the filter
+f = 0.1;                            % frequency of the interference sine wave ]0,0.5[
+r = 0.0001;                         % Learning/Forgetting rate of the convergence to the optimal system
+env = 'stationary';                 % Stationary or none stationary environment
+
+%====================================================================================
+%                       Main Runnable Script (do not modify)
+%====================================================================================
 
 % Prepare holders
 x = [];
@@ -17,21 +23,43 @@ y = [];
 idx = [];
 
 % Search for Data that matches conditions
-%conditions = sprintf('_M%d_nD%d_f%f',M,nD,f);
-conditions = sprintf('_nD%d_f%f_r%f',nD,f,r);
+switch variable
+    case 'r'
+        conditions = sprintf("_M%d_nD%d_f%f",M,nD,f);
+    case 'M'
+        conditions = sprintf("_nD%d_f%f_r%f",nD,f,r);
+    case 'f'
+        conditions = [sprintf("_M%d_nD%d",M,nD), sprintf("_r%f",r)];
+    case 'nD'
+        conditions = [sprintf("_M%d",M), sprintf("_f%f_r%f",f,r)];
+end
 
-ls = dir('TestData');
+ls = dir(sprintf('TestData/%s',env));
 
 for set = 1:length(ls)
-   if(contains(ls(set).name,conditions))
-       idx = [idx set];
-       x = [x, load(sprintf('TestData/%s/x.mat',ls(set).name))];
-       s = [s, load(sprintf('TestData/%s/s.mat',ls(set).name))];
-       i = [i, load(sprintf('TestData/%s/i.mat',ls(set).name))];
-       e = [e, load(sprintf('TestData/%s/e.mat',ls(set).name))];
-       h = [h, load(sprintf('TestData/%s/h.mat',ls(set).name))];
-       y = [y, load(sprintf('TestData/%s/y.mat',ls(set).name))];
+   valid = false;
+   for seg = 1:length(conditions)
+       if(contains(ls(set).name,conditions(seg)))
+           valid = true;
+       else
+           valid = false;
+           break
+       end
    end
+   if(valid)
+       idx = [idx set];
+       x = [x, load(sprintf('TestData/%s/%s/x.mat',env,ls(set).name))];
+       s = [s, load(sprintf('TestData/%s/%s/s.mat',env,ls(set).name))];
+       i = [i, load(sprintf('TestData/%s/%s/i.mat',env,ls(set).name))];
+       e = [e, load(sprintf('TestData/%s/%s/e.mat',env,ls(set).name))];
+       h = [h, load(sprintf('TestData/%s/%s/h.mat',env,ls(set).name))];
+       y = [y, load(sprintf('TestData/%s/%s/y.mat',env,ls(set).name))];
+   end
+end
+
+if(isempty(x))
+    "No data set matching selected parameters"
+    return
 end
 
 % Plot Error
@@ -41,12 +69,12 @@ order = 500;
 for set = 1:length(x)
     s_ = s(set).s;
     e_ = e(set).e;
-    err = MovingAverage(abs(s_(M+nD:samples)-e_(M+nD:samples)),order);
-    plot((M+nD:samples),err);
+    mse = MovingAverage(abs(s_-e_).^2,order);
+    plot(mse);
 end
-title('Absolte error between s[n] and e[s]');
+title('Mean Square Error between s[n] and e[n]');
 xlabel('sample n');
-ylabel(sprintf('%s (mean of %d samples)', 'Mean error', order));
+ylabel(sprintf('%s (moving average of %d samples)', 'Mean Square Error', order));
 legend(replace({ls(idx).name}, '_','/'),'Location', 'northeast');
 hold off;
 
@@ -62,5 +90,6 @@ for set = 1:length(h)
 end
 title('Adaptive filter H(w)');
 xlabel('Angular Frequency (pi rad/s)');
+ylabel('Amplitude');
 legend(replace({ls(idx).name}, '_','/'),'Location', 'north');
 hold off;
