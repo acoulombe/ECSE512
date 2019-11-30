@@ -26,7 +26,7 @@ function [y, e, h] = LMS(x, d, M, nD, mu);
     %=================================================
     
     samples = length(x);
-    
+
     h = zeros(M,1);             % System function
     e = zeros(1,samples);       % Error signal
     y = zeros(1,samples);       % Output estimate signal
