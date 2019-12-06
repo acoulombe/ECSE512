@@ -7,11 +7,11 @@ M = 50;                     % Memory of the adaptive filter
 nD = 50;                   % Delay of the input signal x[n]
 f=0.1;                      % frequency of the interference sine wave ]0,0.5[
 
-env = 'non-stationary';     % Determine environment to use
+env = 'stationary';     % Determine environment to use
 switch env
     case 'stationary'
         samples = 10000;
-        s = randn(size(i));         % wideband signal s[n]
+        s = randn(1,samples);         % wideband signal s[n]
     case 'non-stationary'
         src_file = "48k/CA/CA01_01.wav";    % audio file to use as wideband signal s[n]
         [v, Fs] = audioread(src_file);
@@ -19,11 +19,11 @@ switch env
         s = v'; 
 end
 n = 1:samples;    
-i = 0.1*sin(pi*f*n);            % narrowband interference signal i[n]
+i = 0.5*sin(pi*f*n);            % narrowband interference signal i[n]
 x = s+i;                    % input signal x[n]
 d = x;                      % Desired signal d[n]
 
-mu =0.001;                 % Learning rate/step-size of the convergence to the optimal system
+mu =0.0001;                 % Learning rate/step-size of the convergence to the optimal system
 lambda = 0.999;             % Forgetting rate of the convergence to the optimal system
 
 %====================================================================================
@@ -54,14 +54,14 @@ h_fft = abs(fft(h,fft_samples+1));
 
 % Plot the values of interest
 figure;
-subplot(4,1,1); plot((M+nD:samples),x(M+nD:samples)); title('input signal x[n]');
-subplot(4,1,2); plot((M+nD:samples),y(M+nD:samples)); title('estimated interference signal i[n]');
-subplot(4,1,3); plot((M+nD:samples),e(M+nD:samples)); title('error signal e[n]');
-subplot(4,1,4); plot((M+nD:samples),(s(M+nD:samples)-e(M+nD:samples)).^2); title('Square error between s[n] and e[n]');
+subplot(4,1,1); plot((M+nD:samples),x(M+nD:samples)); title('Input Signal x[n]');
+subplot(4,1,2); plot((M+nD:samples),y(M+nD:samples)); title('Estimated Interference Signal i[n]');
+subplot(4,1,3); plot((M+nD:samples),e(M+nD:samples)); title('Error Signal e[n]');
+subplot(4,1,4); plot((M+nD:samples),(s(M+nD:samples)-e(M+nD:samples)).^2); title('Square Error Between s[n] and e[n]');
 
 figure;
-subplot(4,1,1); plot(0:2/fft_samples:2,h_fft); title('adaptive filter H(w)'); xlabel('angular frequency (pi rad/s)');
-subplot(4,1,2); plot(0:2/fft_samples:2,x_fft); title('input signal X(w)'); xlabel('angular frequency (pi rad/s)');
-subplot(4,1,3); plot(0:2/fft_samples:2,y_fft); title('estimated Interference I(w)'); xlabel('angular frequency (pi rad/s)');
-subplot(4,1,4); plot(0:2/fft_samples:2,e_fft); title('output signal E(w)'); xlabel('angular frequency (pi rad/s)');
+subplot(4,1,1); plot(0:2/fft_samples:2,h_fft); title('Adaptive Filter H(\omega)'); xlabel('Angular Frequency (\pi rad/s)');
+subplot(4,1,2); plot(0:2/fft_samples:2,x_fft); title('Input Signal X(\omega)'); xlabel('Angular Frequency (\pi rad/s)');
+subplot(4,1,3); plot(0:2/fft_samples:2,y_fft); title('Estimated Interference I(\omega)'); xlabel('Angular Frequency (\pi rad/s)');
+subplot(4,1,4); plot(0:2/fft_samples:2,e_fft); title('Output Signal E(\omega)'); xlabel('Angular Frequency (\pi rad/s)');
 %====================================================================================

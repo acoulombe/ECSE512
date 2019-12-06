@@ -2,11 +2,11 @@ clear all;
 close all;
 
 % User Modifyable Parameters
-variable = 'M';                     % Variable to analyse effect on output [M,nD,f,r]
+variable = 'r';                     % Variable to analyse effect on output [M,nD,f,r]
 M = 50;                             % Order of the filter
-nD = 100;                           % Delay of the input signal to the filter
+nD = 50;                           % Delay of the input signal to the filter
 f = 0.1;                            % frequency of the interference sine wave ]0,0.5[
-r = 0.0001;                         % Learning/Forgetting rate of the convergence to the optimal system
+r = 0.001;                         % Learning/Forgetting rate of the convergence to the optimal system
 env = 'stationary';                 % Stationary or none stationary environment
 
 %====================================================================================
@@ -72,8 +72,8 @@ for set = 1:length(x)
     mse = MovingAverage(abs(s_-e_).^2,order);
     plot(mse);
 end
-title('Mean Square Error between s[n] and e[n]');
-xlabel('sample n');
+title('Mean Square Error Between s[n] and e[n]');
+xlabel('Sample n');
 ylabel(sprintf('%s (moving average of %d samples)', 'Mean Square Error', order));
 legend(replace({ls(idx).name}, '_','/'),'Location', 'northeast');
 hold off;
@@ -88,8 +88,8 @@ for set = 1:length(h)
     h_fft = abs(fft(h_,fft_samples+1));
     plot(0:2/fft_samples:2,h_fft);
 end
-title('Adaptive filter H(w)');
-xlabel('Angular Frequency (pi rad/s)');
+title('Adaptive filter H(\omega)');
+xlabel('Angular Frequency (\pi rad/s)');
 ylabel('Amplitude');
 legend(replace({ls(idx).name}, '_','/'),'Location', 'north');
 hold off;
