@@ -45,13 +45,7 @@ switch type
         "Invalid type of adaptive filter"
         return
 end
-hold on;
-plot(x);
-plot(i);
-plot(e);
-plot(s);
 
-abs(snr(e,i)-snr(s,i))
 
 % Frequency response of the signals
 fft_samples = ceil(samples*0.1);
@@ -72,23 +66,3 @@ subplot(4,1,1); plot(0:2/fft_samples:2,h_fft); title('Adaptive Filter H(\omega)'
 subplot(4,1,2); plot(0:2/fft_samples:2,x_fft); title('Input Signal X(\omega)'); xlabel('Angular Frequency (\pi rad/s)');
 subplot(4,1,3); plot(0:2/fft_samples:2,y_fft); title('Estimated Interference I(\omega)'); xlabel('Angular Frequency (\pi rad/s)');
 subplot(4,1,4); plot(0:2/fft_samples:2,e_fft); title('Output Signal E(\omega)'); xlabel('Angular Frequency (\pi rad/s)');
-% ====================================================================================
-
-% Report figures
-figure;
-subplot(2,1,1); plot((M+nD:samples),s(M+nD:samples)); title('Speech Signal s[n]');
-subplot(2,1,2); plot((M+nD:samples),x(M+nD:samples)); title('Input Signal x[n]');
-% 
-% figure;
-% plot(0:2/fft_samples:2,x_fft); title('Input Signal X(\omega)'); xlabel('Angular Frequency (\pi rad/s)');
-% 
-% figure; hold on;
-% plot(0:2/fft_samples:2,x_fft);
-% plot(0:2/fft_samples:2,e_fft); title('Frequency Domain Input and Output Signals'); xlabel('Angular Frequency (\pi rad/s)');
-% legend('Input Signal X(\omega)','Output Signal E(\omega)');
-% 
-% figure;
-% plot(0:2/fft_samples:2,h_fft); title('Adaptive Filter H(\omega)'); xlabel('Angular Frequency (\pi rad/s)');
-% 
-% figure;
-% plot(0:2/fft_samples:2,y_fft); title('Estimated Interference I(\omega)'); xlabel('Angular Frequency (\pi rad/s)');

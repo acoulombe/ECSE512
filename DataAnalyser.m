@@ -75,7 +75,6 @@ end
 title('Mean Square Error Between s[n] and e[n]');
 xlabel('Sample n');
 ylabel(sprintf('%s \n(moving average of %d samples)', 'Mean Square Error', order));
-%ylabel('Mean Square Error');
 legend(replace({ls(idx).name}, '_','/'),'Location', 'northeast');
 hold off;
 
