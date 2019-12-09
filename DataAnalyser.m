@@ -3,11 +3,11 @@ close all;
 
 % User Modifyable Parameters
 variable = 'r';                     % Variable to analyse effect on output [M,nD,f,r]
-M = 50;                             % Order of the filter
-nD = 50;                           % Delay of the input signal to the filter
-f = 0.1;                            % frequency of the interference sine wave ]0,0.5[
-r = 0.001;                         % Learning/Forgetting rate of the convergence to the optimal system
-env = 'stationary';                 % Stationary or none stationary environment
+M = 25;                             % Order of the filter
+nD = 50;                            % Delay of the input signal to the filter
+f = 0.05;                           % frequency of the interference sine wave ]0,0.5[
+r = 0.95;                           % Learning/Forgetting rate of the convergence to the optimal system
+env = 'non-stationary';             % Stationary or none stationary environment
 
 %====================================================================================
 %                       Main Runnable Script (do not modify)
@@ -70,11 +70,12 @@ for set = 1:length(x)
     s_ = s(set).s;
     e_ = e(set).e;
     mse = MovingAverage(abs(s_-e_).^2,order);
-    plot(mse);
+    plot(mse)
 end
 title('Mean Square Error Between s[n] and e[n]');
 xlabel('Sample n');
-ylabel(sprintf('%s (moving average of %d samples)', 'Mean Square Error', order));
+ylabel(sprintf('%s \n(moving average of %d samples)', 'Mean Square Error', order));
+%ylabel('Mean Square Error');
 legend(replace({ls(idx).name}, '_','/'),'Location', 'northeast');
 hold off;
 
